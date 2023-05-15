@@ -1,16 +1,44 @@
+import axios from "axios";
+import { useState, useEffect } from "react";
 import { PhotosIndex } from "./PhotosIndex";
+import { PhotosShow } from "./PhotosShow";
+import { Modal } from "./Modal";
 
 export function Content() {
-  const photos = [
-     {id: 1, name: "Quaker", url: "https://www.animalhumanesociety.org/sites/default/files/styles/scale_width_240/public/media/image/2017-07/bird-1435859_1920.jpg?itok=Vhfbuvm2ttps://via.placeholder.com/150", width: 150, height: 150},
-     {id: 2, name: "Sun Conure", url: "https://cf.ltkcdn.net/birds/bird-species/images/std/324030-800x533-sun-conure-care.webp", width: 150, height: 150},
-    ];
+  const [photos, setPhotos] = useState([]);
+  const [isPhotosShowVisible, setIsPhotosShowVisible] = useState(false);
+  const [currentPhoto, setCurrentPhoto] = useState({});
+  
+  const handleIndexPhotos = () => {
+    console.log("handleIndexPhotos");
+    axios.get("http://localhost:3000/photos.json").then((response) => {
+      console.log(response.data);
+      setPhotos(response.data);
+    });
+  };
+  
+  const handleShowPhoto = (photo) => {
+    console.log("handleShowPhoto", photo);
+    setIsPhotosShowVisible(true);
+    setCurrentPhoto(photo);
+  };
+  
+  const handleClose = () => {
+    console.log("handleClose");
+    setIsPhotosShowVisible(false);
+  };
+  
+  useEffect(handleIndexPhotos, []);
+
   
   
   return (
     <div>
       <h1>Welcome to Parrot Base!</h1>
-      <PhotosIndex photos={photos} />
+      <PhotosIndex photos={photos} onShowPhoto={handleShowPhoto} />
+      <Modal show={isPhotosShowVisible} onClose={handleClose}>
+        <PhotosShow photo={currentPhoto} />
+        </Modal>
     </div>
   )
 }
